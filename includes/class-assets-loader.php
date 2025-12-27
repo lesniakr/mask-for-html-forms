@@ -154,6 +154,26 @@ class Assets_Loader {
             // Whether to watch for dynamically added inputs.
             'watchDynamicInputs' => true,
 
+            // Enable inline error messages under inputs.
+            'showInlineErrors'   => (bool) get_option( Admin_Page::OPTION_INLINE_ERRORS, false ),
+
+            // Default inline error class name.
+            'inlineErrorClass'   => 'mfhf-mask-error',
+
+            // Default class added to invalid inputs.
+            'invalidInputClass'  => 'mfhf-mask-invalid',
+
+            // Localized messages for inline errors.
+            'messages'          => array(
+                'invalidValueWithPos' => __( 'Invalid value "%1$s" at position %2$s (expected %3$s)', 'mask-for-html-forms' ),
+                'invalidValue'        => __( 'Invalid value "%1$s" (expected %2$s)', 'mask-for-html-forms' ),
+                'invalidGeneric'      => __( 'Invalid value for this field', 'mask-for-html-forms' ),
+                'incomplete'          => __( 'Complete the format (missing %s characters)', 'mask-for-html-forms' ),
+                'required'            => __( 'This field is required', 'mask-for-html-forms' ),
+                'tooShort'            => __( 'Please enter at least %s characters', 'mask-for-html-forms' ),
+                'tooLong'             => __( 'Please enter no more than %s characters', 'mask-for-html-forms' ),
+            ),
+
             // Custom translations for mask patterns.
             'translations'      => $this->get_mask_translations(),
 

@@ -86,6 +86,30 @@ Additional attributes for customizing mask behavior:
 <input type="text" data-mask="00-000" data-mask-selectonfocus="true" />
 ```
 
+#### Inline Error Messages
+
+Inline errors are off by default. Enable globally via the `mfhf_script_settings` filter or per field:
+
+```php
+add_filter('mfhf_script_settings', function($settings) {
+    $settings['showInlineErrors'] = true;
+    return $settings;
+});
+```
+
+```html
+<!-- Enable inline errors for this field only -->
+<input type="text" data-mask="00-000" data-mask-show-error="true" />
+
+<!-- Custom message and class -->
+<input type="text" data-mask="000 000 000"
+       data-mask-show-error="true"
+       data-mask-error="Please enter 9 digits"
+       data-mask-error-class="my-inline-error" />
+```
+
+Defaults inject a minimal `.mfhf-mask-error` style; override with your own class when needed.
+
 ### Complete Form Example
 
 ```html

@@ -33,6 +33,20 @@ class Admin_Page {
     const PAGE_SLUG = 'mask-for-html-forms';
 
     /**
+     * Option key for inline errors default.
+     *
+     * @var string
+     */
+    const OPTION_INLINE_ERRORS = 'mfhf_show_inline_errors';
+
+    /**
+     * Admin notice message.
+     *
+     * @var string|null
+     */
+    private ?string $notice = null;
+
+    /**
      * Constructor.
      *
      * Sets up admin hooks.
@@ -112,19 +126,88 @@ class Admin_Page {
      * @return void
      */
     public function render_page(): void {
+        $this->handle_settings_form();
         ?>
         <div class="wrap mfhf-admin-page">
             <h1><?php esc_html_e( 'Mask for HTML Forms', 'mask-for-html-forms' ); ?></h1>
+
+            <?php $this->render_notice(); ?>
 
             <div class="mfhf-intro">
                 <p><?php esc_html_e( 'Add input masks to your HTML Forms fields using simple HTML attributes. Input masks help users enter data in the correct format by automatically formatting their input.', 'mask-for-html-forms' ); ?></p>
             </div>
 
+            <?php $this->render_settings_section(); ?>
             <?php $this->render_quick_start_section(); ?>
             <?php $this->render_presets_section(); ?>
             <?php $this->render_custom_masks_section(); ?>
             <?php $this->render_mask_options_section(); ?>
             <?php $this->render_examples_section(); ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Handle settings form submission.
+     *
+     * @return void
+     */
+    private function handle_settings_form(): void {
+        if ( ! isset( $_POST['mfhf_settings_nonce'] ) ) {
+            return;
+        }
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
+        if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mfhf_settings_nonce'] ) ), 'mfhf_save_settings' ) ) {
+            return;
+        }
+
+        $inline_errors_enabled = isset( $_POST['mfhf_show_inline_errors'] ) && '1' === $_POST['mfhf_show_inline_errors'];
+
+        update_option( self::OPTION_INLINE_ERRORS, $inline_errors_enabled ? 1 : 0 );
+
+        $this->notice = __( 'Settings saved.', 'mask-for-html-forms' );
+    }
+
+    /**
+     * Render admin notice if set.
+     *
+     * @return void
+     */
+    private function render_notice(): void {
+        if ( ! $this->notice ) {
+            return;
+        }
+
+        echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $this->notice ) . '</p></div>';
+    }
+
+    /**
+     * Render settings section.
+     *
+     * @return void
+     */
+    private function render_settings_section(): void {
+        $inline_errors_enabled = (bool) get_option( self::OPTION_INLINE_ERRORS, false );
+        ?>
+        <div class="mfhf-section">
+            <h2><?php esc_html_e( 'Settings', 'mask-for-html-forms' ); ?></h2>
+            <form method="post">
+                <?php wp_nonce_field( 'mfhf_save_settings', 'mfhf_settings_nonce' ); ?>
+                <label style="display:flex;align-items:center;gap:8px;">
+                    <input type="checkbox" name="mfhf_show_inline_errors" value="1" <?php checked( $inline_errors_enabled ); ?> />
+                    <span><?php esc_html_e( 'Show inline mask messages under fields by default (data-mask-show-error = true).', 'mask-for-html-forms' ); ?></span>
+                </label>
+                <p class="description">
+                    <?php esc_html_e( 'You can override per field with the data-mask-show-error attribute.', 'mask-for-html-forms' ); ?>
+                </p>
+                <p>
+                    <button type="submit" class="button button-primary"><?php esc_html_e( 'Save settings', 'mask-for-html-forms' ); ?></button>
+                </p>
+            </form>
         </div>
         <?php
     }
@@ -334,12 +417,31 @@ class Admin_Page {
                         <td><code>data-mask-selectonfocus="true"</code></td>
                     </tr>
                     <tr>
+                        <td><code>data-mask-show-error</code></td>
+                        <td><?php esc_html_e( 'Show inline error message under this field (overrides global setting)', 'mask-for-html-forms' ); ?></td>
+                        <td><code>data-mask-show-error="true"</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>data-mask-error</code></td>
+                        <td><?php esc_html_e( 'Custom inline error text when the mask is invalid', 'mask-for-html-forms' ); ?></td>
+                        <td><code>data-mask-error="Please follow the format"</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>data-mask-error-class</code></td>
+                        <td><?php esc_html_e( 'Custom CSS class for the inline error element', 'mask-for-html-forms' ); ?></td>
+                        <td><code>data-mask-error-class="my-inline-error"</code></td>
+                    </tr>
+                    <tr>
                         <td><code>placeholder</code></td>
                         <td><?php esc_html_e( 'Standard HTML placeholder attribute (shows format hint)', 'mask-for-html-forms' ); ?></td>
                         <td><code>placeholder="DD/MM/YYYY"</code></td>
                     </tr>
                 </tbody>
             </table>
+
+            <p style="margin-top: 10px;">
+                <?php esc_html_e( 'Inline errors are disabled by default. Enable globally via the mfhf_script_settings filter or per field with data-mask-show-error.', 'mask-for-html-forms' ); ?>
+            </p>
         </div>
         <?php
     }
