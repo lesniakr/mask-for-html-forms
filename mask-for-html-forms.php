@@ -3,7 +3,7 @@
  * Plugin Name:       Mask for HTML Forms
  * Plugin URI:        https://github.com/lesniakr/mask-for-html-forms
  * Description:       Extends HTML Forms plugin with input masking capabilities using jQuery Mask Plugin. Add phone, date, postal code, and custom masks to your form fields.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Rafał Leśniak
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define plugin constants.
-define( 'MFHF_VERSION', '1.0.0' );
+define( 'MFHF_VERSION', '1.0.1' );
 define( 'MFHF_PLUGIN_FILE', __FILE__ );
 define( 'MFHF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MFHF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
